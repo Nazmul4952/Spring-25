@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Satellite Monitoring System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #0f2027, #203a43, #2c5364);
+      color: #00fff7;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      min-height: 100vh;
+      transition: background 0.5s, color 0.5s;
+    }
+
+    body.day-mode {
+      background: radial-gradient(circle at center, #ffffff, #e0e0e0);
+      color: #000;
+    }
+
+    .app-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #00fff7;
+      text-align: center;
+      text-shadow: 0 0 10px #00fff7;
+    }
+
+    body.day-mode .app-title {
+      color: #000;
+      text-shadow: none;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .card {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid #00fff7;
+      border-radius: 15px;
+      padding: 15px;
+      box-shadow: 0 0 20px #00fff7;
+      transition: background 0.5s, border 0.5s, box-shadow 0.5s;
+    }
+
+    body.day-mode .card {
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid #000;
+      box-shadow: 0 0 20px #ccc;
+    }
+
+    .radar {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, #00fff7 20%, #003233);
+      animation: pulse 2s infinite;
+      margin: auto;
+    }
+
+    .title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .btn {
+      background: #00fff7;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      margin: 5px;
+      color: #000;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background: #02d5cf;
+    }
+
+    .footer-btns {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .input {
+      width: 100%;
+      padding: 6px;
+      border-radius: 6px;
+      border: 1px solid #00fff7;
+      background-color: #001010;
+      color: #00fff7;
+      margin-bottom: 10px;
+    }
+
+    body.day-mode .input {
+      background-color: #fff;
+      color: #000;
+      border: 1px solid #333;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 10px;
+    }
+
+    ul li {
+      margin-bottom: 4px;
+    }
+
+    .crash-mode-active {
+      border: 2px solid red !important;
+      box-shadow: 0 0 15px red !important;
+    }
+
+    /* Modal styling */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: #121212;
+      color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 400px;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 10px #00fff7, 0 0 20px #00fff7;
+      }
+      50% {
+        box-shadow: 0 0 20px #00fff7, 0 0 40px #00fff7;
+      }
+      100% {
+        box-shadow: 0 0 10px #00fff7, 0 0 20px #00fff7;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-title">Satellite Monitoring System</div>
+  <div class="radar"></div>
+
+  <div class="dashboard">
+    <div class="card">
+      <div class="title">Satellite Feed</div>
+      <input class="input" id="filterInput" placeholder="Filter by ID" />
+      <ul id="satelliteFeed">
+        <li>SAT-001 | Speed: 7.22 km/s | Alt: 407.7 km</li>
+        <li>SAT-002 | Speed: 7.79 km/s | Alt: 408.9 km</li>
+        <li>SAT-003 | Speed: 7.65 km/s | Alt: 412.8 km</li>
+        <li>SAT-004 | Speed: 7.17 km/s | Alt: 418.5 km</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="title">Satellite Communication</div>
+      <input class="input" id="commandInput" placeholder="Send command to satellite..." />
+      <button class="btn" onclick="sendCommand()">Send Command</button>
+    </div>
+
+    <div class="card">
+      <button class="btn" onclick="crashSatellite()">Crash Satellite</button>
+    </div>
+
+    <div class="card">
+      <div class="title">Satellite Timeline</div>
+      <progress id="timelineProgress" value="1" max="5"></progress>
+      <p>Year: 2025</p>
+    </div>
+
+    <div class="card">
+      <div class="title">Satellite Resources</div>
+      <div id="satelliteResources">
+        <p>SAT-001<br>Fuel: 89% | Power: 78%</p>
+        <p>SAT-002<br>Fuel: 89% | Power: 78%</p>
+        <p>SAT-003<br>Fuel: 93% | Power: 88%</p>
+        <p>SAT-004<br>Fuel: 93% | Power: 88%</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="title">UTC Time</div>
+      <p id="utcTime"></p>
+    </div>
+  </div>
+
+  <div class="footer-btns">
+    <button class="btn" onclick="addSatellite()">+ Add Satellite</button>
+    <button class="btn" onclick="deleteLastSatellite()">🗑 Delete Last Satellite</button>
+    <button class="btn" onclick="toggleDayNightMode()">☀️ Toggle Day/Night Mode</button>
+    <button class="btn" style="background-color: red; color: white;" onclick="toggleCrashMode()">🚨 Toggle Delete Mode</button>
+  </div>
+
+  <!-- Modal -->
+  <div id="crashModal" class="modal">
+    <div class="modal-content" id="modalMessage">
+      Satellite crashed!
+    </div>
+  </div>
+
+  <script>
+    setInterval(() => {
+      document.getElementById('utcTime').textContent = new Date().toUTCString();
+    }, 1000);
+
+    document.getElementById('filterInput').addEventListener('input', function () {
+      const filter = this.value.toUpperCase();
+      const items = document.querySelectorAll('#satelliteFeed li');
+      items.forEach(item => {
+        const txt = item.textContent || item.innerText;
+        item.style.display = txt.toUpperCase().includes(filter) ? '' : 'none';
+      });
+    });
+
+    function sendCommand() {
+      const command = document.getElementById('commandInput').value;
+      if (command.trim()) {
+        alert(`Command Sent: ${command}`);
+        document.getElementById('commandInput').value = '';
+      }
+    }
+
+    function addSatellite() {
+      const newId = Date.now();
+      const newFeedItem = document.createElement('li');
+      const newSatId = `SAT-${newId.toString().slice(-3)}`;
+      newFeedItem.textContent = `${newSatId} | Speed: 7.50 km/s | Alt: 410 km`;
+      document.getElementById('satelliteFeed').appendChild(newFeedItem);
+
+      const newResource = document.createElement('p');
+      newResource.innerHTML = `${newSatId}<br>Fuel: 90% | Power: 87%`;
+      document.getElementById('satelliteResources').appendChild(newResource);
+
+      const progress = document.getElementById('timelineProgress');
+      if (progress.value < progress.max) progress.value++;
+    }
+
+    function deleteLastSatellite() {
+      const feed = document.getElementById('satelliteFeed');
+      const res = document.getElementById('satelliteResources');
+      if (feed.lastElementChild) feed.removeChild(feed.lastElementChild);
+      if (res.lastElementChild) res.removeChild(res.lastElementChild);
+
+      const progress = document.getElementById('timelineProgress');
+      if (progress.value > 0) progress.value--;
+    }
+
+    let crashMode = false;
+    function toggleCrashMode() {
+      crashMode = !crashMode;
+      const feedItems = document.querySelectorAll('#satelliteFeed li');
+      feedItems.forEach(item => {
+        if (crashMode) {
+          item.classList.add('crash-mode-active');
+          item.addEventListener('click', crashSatelliteFromFeed);
+        } else {
+          item.classList.remove('crash-mode-active');
+          item.removeEventListener('click', crashSatelliteFromFeed);
+        }
+      });
+    }
+
+    function crashSatelliteFromFeed(e) {
+      if (crashMode) {
+        const item = e.target;
+        const satId = item.textContent.split('|')[0].trim();
+        item.remove();
+
+        const res = document.getElementById('satelliteResources');
+        const entries = Array.from(res.querySelectorAll('p'));
+        for (let entry of entries) {
+          if (entry.textContent.startsWith(satId)) {
+            entry.remove();
+            break;
+          }
+        }
+
+        showModal(`${satId} has been crashed!`);
+      }
+    }
+
+    function crashSatellite() {
+      showModal('Manual crash command sent to satellite system!');
+    }
+
+    function toggleDayNightMode() {
+      document.body.classList.toggle('day-mode');
+    }
+
+    function showModal(message) {
+      const modal = document.getElementById('crashModal');
+      document.getElementById('modalMessage').textContent = message;
+      modal.classList.add('show');
+      setTimeout(() => {
+        modal.classList.remove('show');
+      }, 2500);
+    }
+  </script>
+</body>
+</html>

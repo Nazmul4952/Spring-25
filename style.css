@@ -1,0 +1,135 @@
+/* Responsive and professional design improvements */
+
+/* Container fills most of viewport width with padding */
+.container {
+  max-width: 95vw;
+  margin: 1rem auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-gap: 1.5rem;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+/* Earth container scales with viewport */
+.earth-container {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  height: 40vw;
+  max-height: 400px;
+  margin: 0 auto;
+  animation: rotateEarth 30s linear infinite;
+  box-shadow:
+    0 0 30px rgba(0, 191, 165, 0.6);
+  border-radius: 50%;
+  overflow: hidden;
+  background: radial-gradient(circle at center, #004d40, #00251a);
+}
+
+/* Earth image scales to container */
+.earth {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: block;
+  filter:
+    drop-shadow(0 0 15px #00bfa5);
+  object-fit: cover;
+}
+
+/* Satellite sizes scale with earth container */
+.satellite {
+  position: absolute;
+  width: 8vw;
+  max-width: 40px;
+  height: 8vw;
+  max-height: 40px;
+  background: url('assets/satellite.png') no-repeat center/contain;
+  animation: orbit 10s linear infinite;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow:
+    0 0 5px #00ffcc;
+  border-radius: 8px;
+  perspective: 1000px;
+}
+
+.satellite:hover {
+  transform: scale(1.2) rotateY(15deg) rotateX(10deg);
+  box-shadow:
+    0 0 15px #00ffcc,
+    0 0 30px #00ffcc;
+  animation: hoverGlow 2s infinite alternate;
+}
+
+/* Info panel and other panels fill available width */
+.info-panel,
+.communication-panel,
+.impact-panel,
+.timeline-panel,
+.resource-panel,
+.clock-panel,
+.status-feed {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Buttons full width on small screens */
+button {
+  width: 100%;
+  max-width: 280px;
+  margin: 0.25rem 0;
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow:
+    0 0 5px #00ffcc,
+    0 0 10px #00ffcc;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.1s ease;
+  user-select: none;
+  border-radius: 12px;
+  border: none;
+  background-color: #00ffcc;
+  color: #0a1a2a;
+}
+
+button:hover {
+  background-color: #00bfa5;
+  box-shadow:
+    0 0 10px #00bfa5,
+    0 0 20px #00bfa5;
+  transform: scale(1.05);
+  animation: glowPulse 2s infinite alternate;
+}
+
+button:active {
+  transform: scale(0.95);
+  box-shadow:
+    0 0 5px #008e76,
+    0 0 10px #008e76;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .container {
+    grid-template-columns: 1fr;
+    padding: 0 0.5rem;
+  }
+
+  .earth-container {
+    height: 60vw;
+    max-height: none;
+  }
+
+  .satellite {
+    width: 12vw;
+    height: 12vw;
+    max-width: none;
+    max-height: none;
+  }
+
+  button {
+    max-width: 100%;
+  }
+}
